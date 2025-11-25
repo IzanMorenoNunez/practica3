@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'providers/clash_provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/player_details_screen.dart';
-import 'screens/tournament_details_screen.dart';
 
 void main() => runApp(const AppState());
 
@@ -33,7 +32,6 @@ class MyApp extends StatelessWidget {
       routes: {
         'home': (_) => const HomeScreen(),
         'player_details': (_) => const PlayerDetailsScreen(),
-        'tournament_details': (_) => const TournamentDetailsScreen(),
       },
       theme: ThemeData.light().copyWith(
         appBarTheme: const AppBarTheme(color: Colors.deepPurple, elevation: 0),

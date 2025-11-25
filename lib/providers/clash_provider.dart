@@ -4,9 +4,10 @@ import 'dart:convert';
 import '../models/models.dart';
 
 class ClashProvider extends ChangeNotifier {
-  final String _baseUrl = 'api.clashroyale.com';
-  
-  List<GlobalTournament> globalTournaments = [];
+  //final String _baseUrl = 'api.clashroyale.com';
+
+  List<PathOfLegendPlayer> pathOfLegendPlayers = [];
+  String selectedSeason = '2025-10'; //temporada per defecte
   List<ClashCard> allCards = [];
   ClashPlayer? searchedPlayer;
   bool isLoading = false;
@@ -16,33 +17,42 @@ class ClashProvider extends ChangeNotifier {
   }
 
   Future<void> initData() async {
-    await Future.wait([
-      getGlobalTournaments(),
-      getAllCards(),
-    ]);
+    await Future.wait([getPathOfLegendTopPlayers(), getAllCards()]);
   }
 
-  Future<String> _get(String endpoint) async {
-    final url = Uri.https(_baseUrl, endpoint);
-    final response = await http.get(url, headers: {
-      'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImQ0MTExMDhkLTlmNGUtNDIzZi04MmMxLWFjZjJhNWNjN2QzNCIsImlhdCI6MTc2MzYzMzU0Mywic3ViIjoiZGV2ZWxvcGVyL2I3YjRjNTRiLTdlMGQtYzJiNS03MjVjLWY0Y2RmZWZhZWQ4NCIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyI3Ny4yMjAuMjAwLjE2NCJdLCJ0eXBlIjoiY2xpZW50In1dfQ.0lF3R5-55tYAJOQgZakpesYLBkYMlbuue1251CiPORZnZ8S4cHzRDHvg4rbq9Ugp7aRulakHw_JW0CxwWzQoNA',
-    });
+  Future<String> _get(
+    String endpoint, {
+    Map<String, String> queryParameters = const {},
+  }) async {
+    final url = Uri.https('api.clashroyale.com', endpoint, queryParameters);
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjIzYjNkMGU0LWY3NjItNGE0Yy1hZWRiLWJhZmRiMjZjNGYzYyIsImlhdCI6MTc2NDA1Njc5MCwic3ViIjoiZGV2ZWxvcGVyL2I3YjRjNTRiLTdlMGQtYzJiNS03MjVjLWY0Y2RmZWZhZWQ4NCIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyI0NS4xNDQuMTIuNDIiXSwidHlwZSI6ImNsaWVudCJ9XX0.wGZegMU2ViGYm9DnenpY14KSB2w7kIOjWDk8YU-iU43CioaPYXNud0Ke1DehXkYy2orICO-asKgWMUIyBdoMLQ',
+        'Accept': 'application/json',
+        'User-Agent': 'Flutter App',
+      },
+    ).timeout(const Duration(seconds: 15));
+
+    print('URL: $url');
+    print('Status: ${response.statusCode}');
 
     if (response.statusCode != 200) {
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-      throw Exception('Error ${response.statusCode}');
+      throw Exception('Error ${response.statusCode}: ${response.body}');
     }
     return response.body;
   }
 
-  Future<void> getGlobalTournaments() async {
-    final jsonData = await _get('/v1/globaltournaments');
+  Future<void> getPathOfLegendTopPlayers([String? season]) async {
+    season ??= selectedSeason;
+
+    final jsonData = await _get(
+      '/v1/locations/global/pathoflegend/$season/rankings/players',
+      queryParameters: {'limit': '10'},
+    );
+
     final List<dynamic> items = json.decode(jsonData)['items'];
-    globalTournaments = items
-        .map((t) => GlobalTournament.fromJson(t))
-        .where((t) => t.isActive)
-        .toList();
+    pathOfLegendPlayers = items.map((j) => PathOfLegendPlayer.fromJson(j)).toList();
     notifyListeners();
   }
 
@@ -56,17 +66,17 @@ class ClashProvider extends ChangeNotifier {
   Future<void> searchPlayer(String tag) async {
     if (!tag.startsWith('#')) tag = '#$tag';
     final encodedTag = tag.replaceAll('#', '%23').toUpperCase();
-
+  
     isLoading = true;
     notifyListeners();
-
+  
     try {
       final jsonData = await _get('/v1/players/$encodedTag');
       searchedPlayer = ClashPlayer.fromJson(json.decode(jsonData));
     } catch (e) {
       searchedPlayer = null;
     }
-
+  
     isLoading = false;
     notifyListeners();
   }
