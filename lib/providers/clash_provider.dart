@@ -7,7 +7,7 @@ class ClashProvider extends ChangeNotifier {
   //final String _baseUrl = 'api.clashroyale.com';
 
   List<PathOfLegendPlayer> pathOfLegendPlayers = [];
-  String selectedSeason = '2025-10'; //temporada per defecte
+  String selectedSeason = '2024-10'; //temporada per defecte
   List<ClashCard> allCards = [];
   ClashPlayer? searchedPlayer;
   bool isLoading = false;
@@ -28,7 +28,7 @@ class ClashProvider extends ChangeNotifier {
     final response = await http.get(
       url,
       headers: {
-        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjIzYjNkMGU0LWY3NjItNGE0Yy1hZWRiLWJhZmRiMjZjNGYzYyIsImlhdCI6MTc2NDA1Njc5MCwic3ViIjoiZGV2ZWxvcGVyL2I3YjRjNTRiLTdlMGQtYzJiNS03MjVjLWY0Y2RmZWZhZWQ4NCIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyI0NS4xNDQuMTIuNDIiXSwidHlwZSI6ImNsaWVudCJ9XX0.wGZegMU2ViGYm9DnenpY14KSB2w7kIOjWDk8YU-iU43CioaPYXNud0Ke1DehXkYy2orICO-asKgWMUIyBdoMLQ',
+        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjdkM2U0NTkxLWZkZGMtNGQzMS1iZTdlLTkxNGQyNzM0MWFkZiIsImlhdCI6MTc2NDIzMTA0NSwic3ViIjoiZGV2ZWxvcGVyL2I3YjRjNTRiLTdlMGQtYzJiNS03MjVjLWY0Y2RmZWZhZWQ4NCIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyI0NS4xMzguMjU1LjE1Il0sInR5cGUiOiJjbGllbnQifV19.ywI5SPj5ZBew6lcsZgfYCO1ecmCkAmnw4eRPjxcZGDGsGEFMj78mGsUzU98TjxLiIgtCCSIkxvcjGezsFl4GGg',
         'Accept': 'application/json',
         'User-Agent': 'Flutter App',
       },
@@ -64,19 +64,22 @@ class ClashProvider extends ChangeNotifier {
   }
 
   Future<void> searchPlayer(String tag) async {
+    // Aseguramos que tenga # al principio
     if (!tag.startsWith('#')) tag = '#$tag';
-    final encodedTag = tag.replaceAll('#', '%23').toUpperCase();
-  
+
+    final encodedTag = tag;
+
     isLoading = true;
     notifyListeners();
-  
+
     try {
       final jsonData = await _get('/v1/players/$encodedTag');
       searchedPlayer = ClashPlayer.fromJson(json.decode(jsonData));
     } catch (e) {
       searchedPlayer = null;
+      print('Error buscando jugador: $e');
     }
-  
+
     isLoading = false;
     notifyListeners();
   }

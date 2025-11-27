@@ -61,14 +61,14 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   const Text(
                     'Cartas del juego',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
                   ),
                   const SizedBox(height: 10),
                   CardsSlider(cards: clashProvider.allCards),
                   const SizedBox(height: 30),
                   const Text(
                     'Buscar jugador por tag',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
                   ),
                   const SizedBox(height: 10),
                   const PlayerSearch(),

@@ -12,39 +12,70 @@ class PlayerSearch extends StatelessWidget {
     final controller = TextEditingController();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Row(
         children: [
           Expanded(
             child: TextField(
               controller: controller,
+              style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: 'Ej: #LPYGCLCGJ',
-                labelText: 'Buscar jugador por tag',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+                hintText: 'Ej: L2P8Y9PC',
+                hintStyle: const TextStyle(color: Colors.white60),
+                prefixIcon: const Icon(Icons.search, color: Colors.amber),
+                filled: true,
+                fillColor: Colors.deepPurple.shade700,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
+                ),
+                enabled: !clashProvider.isLoading,
               ),
+              onSubmitted: (value) => _performSearch(context, controller.text.trim(), clashProvider),
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
           ElevatedButton(
             onPressed: clashProvider.isLoading
                 ? null
-                : () async {
-                    await clashProvider.searchPlayer(controller.text.trim());
-                    if (clashProvider.searchedPlayer != null) {
-                      Navigator.pushNamed(context, 'player_details');
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Jugador no encontrado')),
-                      );
-                    }
-                  },
+                : () => _performSearch(context, controller.text.trim(), clashProvider),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.amber,
+              padding: const EdgeInsets.all(16),
+              shape: const CircleBorder(),
+            ),
             child: clashProvider.isLoading
-                ? const CircularProgressIndicator(color: Colors.white)
-                : const Icon(Icons.search),
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.deepPurple,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : const Icon(Icons.arrow_forward, color: Colors.deepPurple),
           ),
         ],
       ),
     );
+  }
+
+  void _performSearch(BuildContext context, String input, ClashProvider provider) async {
+    if (input.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Introduce un tag')),
+      );
+      return;
+    }
+    String cleanTag = input.trim().toUpperCase();
+    if (!cleanTag.startsWith('#')) {
+      cleanTag = '#$cleanTag';
+    }
+    Navigator.pushNamed(
+      context,
+      'player_details',
+      arguments: cleanTag,
+    );
+    // controller.clear();
   }
 }

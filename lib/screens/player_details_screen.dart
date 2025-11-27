@@ -1,5 +1,6 @@
 // screens/player_details_screen.dart
 import 'package:flutter/material.dart';
+//wimport 'package:practica3/models/player.dart';
 import 'package:practica3/providers/clash_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -12,8 +13,8 @@ class PlayerDetailsScreen extends StatelessWidget {
         ModalRoute.of(context)!.settings.arguments as String;
 
     return ChangeNotifierProvider(
-      create: (_) => ClashProvider()
-        ..searchPlayer(playerTag.replaceFirst('#', '')),
+      create: (_) =>
+          ClashProvider()..searchPlayer(playerTag.replaceFirst('#', '')),
       child: Consumer<ClashProvider>(
         builder: (context, provider, _) {
           final player = provider.searchedPlayer;
@@ -45,17 +46,16 @@ class PlayerDetailsScreen extends StatelessWidget {
           final double avgElixir = player.currentDeck.isEmpty
               ? 0
               : player.currentDeck
-                      .map((c) => c.elixirCost)
-                      .reduce((a, b) => a + b) /
-                  player.currentDeck.length;
+                        .map((c) => c.elixirCost)
+                        .reduce((a, b) => a + b) /
+                    player.currentDeck.length;
 
           return Scaffold(
             backgroundColor: Colors.deepPurple,
             body: CustomScrollView(
               slivers: [
-                // HEADER ÉPICO
                 SliverAppBar(
-                  expandedHeight: 300,
+                  expandedHeight: 400,
                   floating: false,
                   pinned: true,
                   backgroundColor: Colors.deepPurple,
@@ -63,9 +63,15 @@ class PlayerDetailsScreen extends StatelessWidget {
                     title: Text(
                       player.name,
                       style: const TextStyle(
+                        fontSize: 28,
                         fontWeight: FontWeight.bold,
+                        color: Colors.white,
                         shadows: [
-                          Shadow(color: Colors.black87, blurRadius: 10)
+                          Shadow(
+                            color: Colors.black,
+                            offset: Offset(0, 2),
+                            blurRadius: 8,
+                          ),
                         ],
                       ),
                     ),
@@ -91,20 +97,27 @@ class PlayerDetailsScreen extends StatelessWidget {
                                   'https://api-assets.clashroyale.com/badges/512/${player.clan!.badgeId}.png',
                                   width: 100,
                                   height: 100,
-                                  errorBuilder: (_, __, ___) =>
-                                      const Icon(Icons.shield, size: 100, color: Colors.white70),
+                                  errorBuilder: (_, __, ___) => const Icon(
+                                    Icons.shield,
+                                    size: 100,
+                                    color: Colors.white70,
+                                  ),
                                 ),
                               const SizedBox(height: 16),
                               Text(
                                 '${player.trophies} trofeos',
                                 style: const TextStyle(
-                                    fontSize: 36,
-                                    color: Colors.amber,
-                                    fontWeight: FontWeight.bold),
+                                  fontSize: 36,
+                                  color: Colors.amber,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               Text(
-                                'Nivel ${player.expLevel} • Torre del Rey ${player.kingTowerLevel}',
-                                style: const TextStyle(fontSize: 18, color: Colors.white70),
+                                'Nivel ${player.expLevel}',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white70,
+                                ),
                               ),
                             ],
                           ),
@@ -127,10 +140,19 @@ class PlayerDetailsScreen extends StatelessWidget {
                               leading: Image.network(
                                 'https://api-assets.clashroyale.com/badges/512/${player.clan!.badgeId}.png',
                                 width: 50,
-                                errorBuilder: (_, __, ___) => const Icon(Icons.shield),
+                                errorBuilder: (_, __, ___) =>
+                                    const Icon(Icons.shield),
                               ),
-                              title: Text(player.clan!.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                              subtitle: Text(player.clan!.tag),
+                              title: Text(
+                                player.clan!.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Text(
+                                player.clan!.tag,
+                                style: const TextStyle(color: Colors.grey),
+                              ),
                             ),
                           ),
 
@@ -138,24 +160,38 @@ class PlayerDetailsScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _StatCard(label: 'Victorias', value: '${player.wins}'),
-                            _StatCard(label: 'Derrotas', value: '${player.losses}'),
+                            _StatCard(
+                              label: 'Victorias',
+                              value: '${player.wins}',
+                            ),
+                            _StatCard(
+                              label: 'Derrotas',
+                              value: '${player.losses}',
+                            ),
                             _StatCard(
                               label: 'Ratio',
-                              value: '${((player.wins / (player.wins + player.losses == 0 ? 1 : player.wins + player.losses)) * 100).toStringAsFixed(1)}%',
+                              value:
+                                  '${((player.wins / (player.wins + player.losses == 0 ? 1 : player.wins + player.losses)) * 100).toStringAsFixed(1)}%',
                             ),
                           ],
                         ),
 
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 40),
                         const Text(
                           'Mazo Actual',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.amber),
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.amber,
+                          ),
                         ),
                         const SizedBox(height: 10),
                         Text(
                           'Elixir medio: ${avgElixir.toStringAsFixed(1)}',
-                          style: const TextStyle(fontSize: 18, color: Colors.white70),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.white70,
+                          ),
                         ),
                         const SizedBox(height: 20),
 
@@ -163,37 +199,65 @@ class PlayerDetailsScreen extends StatelessWidget {
                         GridView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 4,
-                            childAspectRatio: 1,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                          ),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 4,
+                                childAspectRatio: 0.7,
+                                crossAxisSpacing: 0,
+                                mainAxisSpacing: 0,
+                              ),
                           itemCount: player.currentDeck.length,
                           itemBuilder: (context, i) {
                             final card = player.currentDeck[i];
+                            SizedBox(height: 10, width: 10);
                             return Column(
                               children: [
                                 Image.network(
                                   card.iconUrl,
                                   width: 70,
                                   height: 70,
-                                  errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported, size: 50),
+                                  errorBuilder: (_, __, ___) => const Icon(
+                                    Icons.image_not_supported,
+                                    size: 50,
+                                  ),
                                 ),
                                 Text(
                                   'Nv.${card.level}',
-                                  style: const TextStyle(fontSize: 12, color: Colors.amber),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.amber,
+                                  ),
                                 ),
                                 Text(
                                   '${card.elixirCost}',
-                                  style: const TextStyle(fontSize: 16, color: Colors.cyan),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.cyan,
+                                  ),
                                 ),
                               ],
-                            );
+                            );n
                           },
                         ),
 
                         const SizedBox(height: 40),
+                        const Text(
+                          'Carta Favorita',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.amber,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Carta: ${avgElixir.toStringAsFixed(1)}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.white70,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
@@ -221,7 +285,14 @@ class _StatCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Text(value, style: const TextStyle(fontSize: 24, color: Colors.amber, fontWeight: FontWeight.bold)),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 24,
+                color: Colors.amber,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             Text(label, style: const TextStyle(color: Colors.white70)),
           ],
         ),

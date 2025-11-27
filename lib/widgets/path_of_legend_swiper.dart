@@ -34,7 +34,7 @@ class PathOfLegendSwiper extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
               gradient: const LinearGradient(
-                colors: [Colors.deepPurple, Colors.purpleAccent],
+                colors: [Colors.deepPurple, Colors.deepPurple],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -112,17 +112,6 @@ class PathOfLegendSwiper extends StatelessWidget {
                             ),
                           ],
                         ),
-
-                      const Spacer(), // Empuja el nivel al fondo
-
-                      // Nivel (siempre visible)
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: Text(
-                          'Nivel ${p.expLevel}',
-                          style: const TextStyle(fontSize: 18, color: Colors.white70),
-                        ),
-                      ),
                     ],
                   ),
                 ),
