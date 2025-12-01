@@ -1,5 +1,6 @@
 // screens/player_details_screen.dart
 import 'package:flutter/material.dart';
+import 'package:practica3/models/card.dart';
 //wimport 'package:practica3/models/player.dart';
 import 'package:practica3/providers/clash_provider.dart';
 import 'package:provider/provider.dart';
@@ -60,21 +61,6 @@ class PlayerDetailsScreen extends StatelessWidget {
                   pinned: true,
                   backgroundColor: Colors.deepPurple,
                   flexibleSpace: FlexibleSpaceBar(
-                    title: Text(
-                      player.name,
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black,
-                            offset: Offset(0, 2),
-                            blurRadius: 8,
-                          ),
-                        ],
-                      ),
-                    ),
                     background: Stack(
                       fit: StackFit.expand,
                       children: [
@@ -199,47 +185,59 @@ class PlayerDetailsScreen extends StatelessWidget {
                         GridView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 4,
-                                childAspectRatio: 0.7,
-                                crossAxisSpacing: 0,
-                                mainAxisSpacing: 0,
-                              ),
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 4,
+                            childAspectRatio: 0.7,
+                            crossAxisSpacing: 0,
+                            mainAxisSpacing: 0,
+                          ),
                           itemCount: player.currentDeck.length,
                           itemBuilder: (context, i) {
-                            final card = player.currentDeck[i];
-                            SizedBox(height: 10, width: 10);
-                            return Column(
-                              children: [
-                                Image.network(
-                                  card.iconUrl,
-                                  width: 70,
-                                  height: 70,
-                                  errorBuilder: (_, __, ___) => const Icon(
-                                    Icons.image_not_supported,
-                                    size: 50,
-                                  ),
+                            final deckCard = player.currentDeck[i];
+                        
+                            // Buscamos la carta completa en allCards para tener todos los datos
+                            final fullCard = provider.allCards.firstWhere(
+                              (c) => c.name == deckCard.name,
+                              orElse: () => ClashCard(
+                                name: deckCard.name,
+                                id: 0,
+                                elixirCost: deckCard.elixirCost,
+                                rarity: 'unknown',
+                                mediumIcon: deckCard.iconUrl,
+                              ),
+                            );
+                        
+                            return GestureDetector(
+                              onTap: () => _showCardDetail(context, fullCard, deckCard.level),
+                              child: Card(
+                                color: Colors.deepPurple.shade800,
+                                elevation: 8,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.network(
+                                      deckCard.iconUrl,
+                                      width: 64,
+                                      height: 64,
+                                      errorBuilder: (_, __, ___) => const Icon(Icons.image, size: 50, color: Colors.white54),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Nv.${deckCard.level}',
+                                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.amber),
+                                    ),
+                                    Text(
+                                      '${deckCard.elixirCost}',
+                                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.cyan),
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  'Nv.${card.level}',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.amber,
-                                  ),
-                                ),
-                                Text(
-                                  '${card.elixirCost}',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.cyan,
-                                  ),
-                                ),
-                              ],
-                            );n
+                              ),
+                            );
                           },
                         ),
-
+                        
                         const SizedBox(height: 40),
                         const Text(
                           'Carta Favorita',
@@ -270,7 +268,142 @@ class PlayerDetailsScreen extends StatelessWidget {
     );
   }
 }
+void _showCardDetail(BuildContext context, ClashCard card, int currentLevel) {
+  final colorByRarity = {
+    'common': Colors.grey.shade400,
+    'rare': Colors.green,
+    'epic': Colors.purple,
+    'legendary': Colors.orange,
+    'champion': Colors.cyan,
+  };
 
+  final rarityColor = colorByRarity[card.rarity] ?? Colors.grey;
+
+  showGeneralDialog(
+    context: context,
+    barrierDismissible: true,
+    barrierLabel: "Cerrar",
+    barrierColor: Colors.black.withOpacity(0.8),
+    transitionDuration: const Duration(milliseconds: 400),
+    pageBuilder: (context, anim1, anim2) => const SizedBox(),
+    transitionBuilder: (context, anim1, anim2, child) {
+      return SlideTransition(
+        position: Tween(begin: const Offset(0, 1), end: const Offset(0, 0)).animate(
+          CurvedAnimation(parent: anim1, curve: Curves.easeOutCubic),
+        ),
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            margin: const EdgeInsets.fromLTRB(20, 40, 20, 20),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1A0033),
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: Colors.amber, width: 3),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.amber.withOpacity(0.5),
+                  blurRadius: 30,
+                  spreadRadius: 5,
+                ),
+              ],
+            ),
+            child: Material( // AQUÍ ESTÁ LA CLAVE: Material para que Chip
+              color: Colors.transparent,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Botón cerrar
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: IconButton(
+                        icon: const Icon(Icons.close, color: Colors.white70, size: 32),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+
+                    // Imagen principal
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.network(
+                        card.mediumIcon,
+                        height: 200,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Evolución si tiene
+                    if (card.evolutionIcon != null) ...[
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.orange, width: 2),
+                        ),
+                        child: Column(
+                          children: [
+                            const Text('EVOLUCIÓN', style: TextStyle(color: Colors.orange, fontSize: 20, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 10),
+                            Image.network(card.evolutionIcon!, height: 160, fit: BoxFit.contain),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
+                    // Nombre
+                    Text(
+                      card.name,
+                      style: const TextStyle(fontSize: 34, fontWeight: FontWeight.bold, color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // Rarity
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.star, color: rarityColor, size: 40),
+                        const SizedBox(width: 12),
+                        Text(
+                          card.rarity.toUpperCase(),
+                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: rarityColor),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Chips bonitos
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        _DetailChip(icon: Icons.bolt, label: '${card.elixirCost} Elixir', color: Colors.cyan),
+                        _DetailChip(icon: Icons.shield, label: 'Máx: ${card.maxLevel ?? 14}', color: Colors.amber),
+                        _DetailChip(icon: Icons.person, label: 'Nivel: $currentLevel', color: Colors.green),
+                        if (card.evolutionIcon != null)
+                          _DetailChip(icon: Icons.auto_awesome, label: 'Evolucionable', color: Colors.orange),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
 class _StatCard extends StatelessWidget {
   final String label;
   final String value;
@@ -297,6 +430,24 @@ class _StatCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _DetailChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _DetailChip({required this.icon, required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Chip(
+      backgroundColor: color.withOpacity(0.2),
+      side: BorderSide(color: color, width: 2),
+      avatar: Icon(icon, color: color, size: 20),
+      label: Text(label, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 16)),
     );
   }
 }

@@ -5,6 +5,8 @@ class ClashCard {
   final String rarity;
   final String mediumIcon;
   final String? evolutionIcon;
+  final int? maxLevel;
+  final int? maxEvolutionLevel;
 
   ClashCard({
     required this.name,
@@ -12,6 +14,8 @@ class ClashCard {
     required this.elixirCost,
     required this.rarity,
     required this.mediumIcon,
+    this.maxLevel,
+    this.maxEvolutionLevel,
     this.evolutionIcon,
   });
 
@@ -24,6 +28,8 @@ class ClashCard {
       rarity: json['rarity'] ?? 'common',
       mediumIcon: iconUrls['medium'] ?? '',
       evolutionIcon: iconUrls['evolutionMedium'],
+      maxLevel: json['maxLevel'],
+      maxEvolutionLevel: json['maxEvolutionLevel'],
     );
   }
 }

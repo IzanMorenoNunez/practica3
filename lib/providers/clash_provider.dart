@@ -10,6 +10,8 @@ class ClashProvider extends ChangeNotifier {
   String selectedSeason = '2024-10'; //temporada per defecte
   List<ClashCard> allCards = [];
   ClashPlayer? searchedPlayer;
+  String apiToken =
+      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImQ0MTExMDhkLTlmNGUtNDIzZi04MmMxLWFjZjJhNWNjN2QzNCIsImlhdCI6MTc2MzYzMzU0Mywic3ViIjoiZGV2ZWxvcGVyL2I3YjRjNTRiLTdlMGQtYzJiNS03MjVjLWY0Y2RmZWZhZWQ4NCIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyI3Ny4yMjAuMjAwLjE2NCJdLCJ0eXBlIjoiY2xpZW50In1dfQ.0lF3R5-55tYAJOQgZakpesYLBkYMlbuue1251CiPORZnZ8S4cHzRDHvg4rbq9Ugp7aRulakHw_JW0CxwWzQoNA';
   bool isLoading = false;
 
   ClashProvider() {
@@ -25,14 +27,16 @@ class ClashProvider extends ChangeNotifier {
     Map<String, String> queryParameters = const {},
   }) async {
     final url = Uri.https('api.clashroyale.com', endpoint, queryParameters);
-    final response = await http.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjdkM2U0NTkxLWZkZGMtNGQzMS1iZTdlLTkxNGQyNzM0MWFkZiIsImlhdCI6MTc2NDIzMTA0NSwic3ViIjoiZGV2ZWxvcGVyL2I3YjRjNTRiLTdlMGQtYzJiNS03MjVjLWY0Y2RmZWZhZWQ4NCIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyI0NS4xMzguMjU1LjE1Il0sInR5cGUiOiJjbGllbnQifV19.ywI5SPj5ZBew6lcsZgfYCO1ecmCkAmnw4eRPjxcZGDGsGEFMj78mGsUzU98TjxLiIgtCCSIkxvcjGezsFl4GGg',
-        'Accept': 'application/json',
-        'User-Agent': 'Flutter App',
-      },
-    ).timeout(const Duration(seconds: 15));
+    final response = await http
+        .get(
+          url,
+          headers: {
+            'Authorization': 'Bearer $apiToken',
+            'Accept': 'application/json',
+            'User-Agent': 'Flutter App',
+          },
+        )
+        .timeout(const Duration(seconds: 15));
 
     print('URL: $url');
     print('Status: ${response.statusCode}');
@@ -52,7 +56,9 @@ class ClashProvider extends ChangeNotifier {
     );
 
     final List<dynamic> items = json.decode(jsonData)['items'];
-    pathOfLegendPlayers = items.map((j) => PathOfLegendPlayer.fromJson(j)).toList();
+    pathOfLegendPlayers = items
+        .map((j) => PathOfLegendPlayer.fromJson(j))
+        .toList();
     notifyListeners();
   }
 
