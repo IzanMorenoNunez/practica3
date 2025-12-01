@@ -9,9 +9,10 @@ class CardsSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 200,
+      height: 220,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: cards.length,
         itemBuilder: (_, i) {
           final card = cards[i];
@@ -19,34 +20,31 @@ class CardsSlider extends StatelessWidget {
           return GestureDetector(
             onTap: () => _showCardDetail(context, card),
             child: Container(
-              width: 130,
-              margin: const EdgeInsets.all(8),
+              width: 140,
+              margin: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(
-                color: Colors.deepPurple.shade800,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.amber.withOpacity(0.5), width: 1),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.4),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+                color: const Color.fromARGB(255, 20, 1, 185),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: Colors.amber.shade700, width: 3),
               ),
               child: Column(
                 children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                    child: FadeInImage(
-                      placeholder: const AssetImage('assets/no-image.jpg'),
-                      image: NetworkImage(card.mediumIcon),
-                      height: 120,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Image.network(
+                        card.mediumIcon,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(6),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    decoration: const BoxDecoration(
+                      color: Colors.black26,
+                      borderRadius: BorderRadius.vertical(bottom: Radius.circular(21)),
+                    ),
                     child: Column(
                       children: [
                         Text(
@@ -57,16 +55,16 @@ class CardsSlider extends StatelessWidget {
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 12,
+                            fontSize: 13,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           '${card.elixirCost}',
                           style: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: Colors.cyan,
+                            color: Colors.purpleAccent,
                           ),
                         ),
                       ],
@@ -94,6 +92,7 @@ class CardsSlider extends StatelessWidget {
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
+      barrierLabel: 'Cerrar detalle de carta',
       barrierColor: Colors.black.withOpacity(0.85),
       transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (_, __, ___) => const SizedBox(),
@@ -120,7 +119,6 @@ class CardsSlider extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Cerrar
                       Align(
                         alignment: Alignment.topRight,
                         child: IconButton(
@@ -128,16 +126,11 @@ class CardsSlider extends StatelessWidget {
                           onPressed: () => Navigator.pop(context),
                         ),
                       ),
-
-                      // Imagen principal
                       ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: Image.network(card.mediumIcon, height: 220, fit: BoxFit.contain),
                       ),
-
                       const SizedBox(height: 20),
-
-                      // Evolución si tiene
                       if (card.evolutionIcon != null) ...[
                         Container(
                           padding: const EdgeInsets.all(14),
@@ -156,17 +149,12 @@ class CardsSlider extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
                       ],
-
-                      // Nombre
                       Text(
                         card.name,
                         style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white),
                         textAlign: TextAlign.center,
                       ),
-
                       const SizedBox(height: 16),
-
-                      // Rarity
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -178,22 +166,18 @@ class CardsSlider extends StatelessWidget {
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 24),
-
-                      // Chips
                       Wrap(
                         spacing: 14,
                         runSpacing: 14,
                         alignment: WrapAlignment.center,
                         children: [
-                          _DetailChip(icon: Icons.bolt, label: '${card.elixirCost} Elixir', color: Colors.cyan),
+                          _DetailChip(icon: Icons.bolt, label: '${card.elixirCost} Elixir', color: const Color.fromARGB(255, 194, 0, 212)),
                           _DetailChip(icon: Icons.shield, label: 'Máx: ${card.maxLevel ?? 14}', color: Colors.amber),
                           if (card.evolutionIcon != null)
                             _DetailChip(icon: Icons.auto_awesome, label: 'Evolucionable', color: Colors.orange),
                         ],
                       ),
-
                       const SizedBox(height: 20),
                     ],
                   ),
@@ -211,7 +195,6 @@ class _DetailChip extends StatelessWidget {
   final IconData icon;
   final String label;
   final Color color;
-
   const _DetailChip({required this.icon, required this.label, required this.color});
 
   @override
@@ -220,10 +203,7 @@ class _DetailChip extends StatelessWidget {
       backgroundColor: color.withOpacity(0.2),
       side: BorderSide(color: color, width: 2),
       avatar: Icon(icon, color: color, size: 22),
-      label: Text(
-        label,
-        style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 16),
-      ),
+      label: Text(label, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 16)),
     );
   }
 }

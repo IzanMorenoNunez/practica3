@@ -34,17 +34,13 @@ class PathOfLegendSwiper extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
               gradient: const LinearGradient(
-                colors: [Colors.deepPurple, Colors.deepPurple],
+                colors: [
+                  Color.fromARGB(255, 0, 68, 255),
+                  Color.fromARGB(255, 0, 42, 121),
+                ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.amber.withOpacity(0.5),
-                  blurRadius: 20,
-                  spreadRadius: 2,
-                ),
-              ],
             ),
             child: Stack(
               children: [
@@ -65,7 +61,12 @@ class PathOfLegendSwiper extends StatelessWidget {
 
                 // Contenido principal
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 20), // ← margen inferior generoso
+                  padding: const EdgeInsets.fromLTRB(
+                    24,
+                    24,
+                    24,
+                    20,
+                  ), // ← margen inferior generoso
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -87,7 +88,10 @@ class PathOfLegendSwiper extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text(
                         'ELO: ${p.eloRating}',
-                        style: const TextStyle(fontSize: 24, color: Colors.amber),
+                        style: const TextStyle(
+                          fontSize: 24,
+                          color: Colors.amber,
+                        ),
                       ),
 
                       const SizedBox(height: 16),
@@ -100,13 +104,20 @@ class PathOfLegendSwiper extends StatelessWidget {
                               'https://api-assets.clashroyale.com/badges/512/${p.clanBadgeId}.png',
                               width: 48,
                               height: 48,
-                              errorBuilder: (_, __, ___) => const Icon(Icons.shield, color: Colors.white70, size: 48),
+                              errorBuilder: (_, __, ___) => const Icon(
+                                Icons.shield,
+                                color: Colors.white70,
+                                size: 48,
+                              ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
                                 p.clanName!,
-                                style: const TextStyle(fontSize: 18, color: Colors.white70),
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white70,
+                                ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),

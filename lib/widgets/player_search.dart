@@ -24,21 +24,29 @@ class PlayerSearch extends StatelessWidget {
                 hintStyle: const TextStyle(color: Colors.white60),
                 prefixIcon: const Icon(Icons.search, color: Colors.amber),
                 filled: true,
-                fillColor: Colors.deepPurple.shade700,
+                fillColor: const Color.fromARGB(255, 1, 60, 187),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
                 ),
                 enabled: !clashProvider.isLoading,
               ),
-              onSubmitted: (value) => _performSearch(context, controller.text.trim(), clashProvider),
+              onSubmitted: (value) => _performSearch(
+                context,
+                controller.text.trim(),
+                clashProvider,
+              ),
             ),
           ),
           const SizedBox(width: 12),
           ElevatedButton(
             onPressed: clashProvider.isLoading
                 ? null
-                : () => _performSearch(context, controller.text.trim(), clashProvider),
+                : () => _performSearch(
+                    context,
+                    controller.text.trim(),
+                    clashProvider,
+                  ),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.amber,
               padding: const EdgeInsets.all(16),
@@ -49,33 +57,33 @@ class PlayerSearch extends StatelessWidget {
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(
-                      color: Colors.deepPurple,
+                      color: Color.fromARGB(255, 1, 56, 177),
                       strokeWidth: 2,
                     ),
                   )
-                : const Icon(Icons.arrow_forward, color: Colors.deepPurple),
+                : const Icon(Icons.arrow_forward, color: Color.fromARGB(255, 10, 23, 199)),
           ),
         ],
       ),
     );
   }
 
-  void _performSearch(BuildContext context, String input, ClashProvider provider) async {
+  void _performSearch(
+    BuildContext context,
+    String input,
+    ClashProvider provider,
+  ) async {
     if (input.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Introduce un tag')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Introduce un tag')));
       return;
     }
     String cleanTag = input.trim().toUpperCase();
     if (!cleanTag.startsWith('#')) {
       cleanTag = '#$cleanTag';
     }
-    Navigator.pushNamed(
-      context,
-      'player_details',
-      arguments: cleanTag,
-    );
+    Navigator.pushNamed(context, 'player_details', arguments: cleanTag);
     // controller.clear();
   }
 }
